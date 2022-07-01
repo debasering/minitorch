@@ -31,17 +31,17 @@ def add(x, y):
 
 def neg(x):
     ":math:`f(x) = -x`"
-    return -x
+    return float(-x)
 
 
 def lt(x, y):
     ":math:`f(x) =` 1.0 if x is less than y else 0.0"
-    return x < y
+    return float(x < y)
 
 
 def eq(x, y):
     ":math:`f(x) =` 1.0 if x is equal to y else 0.0"
-    return x == y
+    return float(x == y)
 
 
 def max(x, y):
@@ -90,7 +90,7 @@ def relu(x):
     Returns:
         float : relu value
     """
-    return max(x, 0)
+    return float(max(x, 0))
 
 
 EPS = 1e-6
@@ -103,7 +103,7 @@ def log(x):
 
 def exp(x):
     ":math:`f(x) = e^{x}`"
-    return math.exp(x)
+    return float(math.exp(x))
 
 
 def log_back(x, d):
