@@ -113,4 +113,4 @@ if __name__ == "__main__":
 
     HIDDEN = 10
     RATE = 0.5
-    ScalarTrain(HIDDEN).train(data, RATE)
+    ScalarTrain(HIDDEN).train(DATASET, RATE)
