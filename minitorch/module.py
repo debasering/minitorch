@@ -49,13 +49,12 @@ class Module:
             params_to_add = [(name + "." + x[0], x[1]) for x in params_to_add]
             # params_to_add = [(x[0], module + "." + x[1]) for x in params_to_add.items()]
             params += params_to_add
-        print(params)
         return params
 
     def parameters(self):
         "Enumerate over all the parameters of this module and its descendents."
         params = self.named_parameters()
-        params = [(x, params[x][0]) for x in range(len(params))]
+        params = [x[1] for x in params]
         return params
 
     def add_parameter(self, k, v):

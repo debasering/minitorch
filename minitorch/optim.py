@@ -10,6 +10,7 @@ class SGD(Optimizer):
 
     def zero_grad(self):
         for p in self.parameters:
+            # print('x', self.parameters)
             if p.value.derivative is not None:
                 p.value._derivative = None
 
