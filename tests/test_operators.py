@@ -115,7 +115,7 @@ def test_sigmoid(a):
 def test_transitive(a, b, c):
     "Test the transitive property of less-than (a < b and b < c implies a < c)"
     a, b, c = sorted([a, b, c])
-    if lt(a, b) & lt(b, c):
+    if lt(a, b) and lt(b, c):
         assert lt(a, c)
 
 
