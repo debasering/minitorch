@@ -7,7 +7,7 @@ import numpy as np
 # Central Difference calculation
 
 
-def central_difference(f, *vals, arg=0, epsilon=1e-6):
+def central_difference(f, *vals, arg=0, epsilon=1e-7):
     r"""
     Computes an approximation to the derivative of `f` with respect to one arg.
 
@@ -29,7 +29,7 @@ def central_difference(f, *vals, arg=0, epsilon=1e-6):
     left_vals = list(vals)
     left_vals[arg] -= epsilon
 
-    f_prime = (f(*right_vals ) - f(*left_vals)) / (2 * epsilon)
+    f_prime = (f(*right_vals) - f(*left_vals)) / (2 * epsilon)
     return f_prime
 
 
@@ -157,6 +157,7 @@ class Add(ScalarFunction):
 
     @staticmethod
     def forward(ctx, a, b):
+
         return a + b
 
     @staticmethod
@@ -186,13 +187,13 @@ class Mul(ScalarFunction):
 
     @staticmethod
     def forward(ctx, a, b):
-
+        ctx.save_for_backward(a, b)
         return a * b
 
     @staticmethod
     def backward(ctx, d_output):
-        # TODO: Implement for Task 1.4.
-        raise NotImplementedError('Need to implement for Task 1.4')
+        a, b = ctx.saved_values
+        return d_output * b, a * d_output
 
 
 class Inv(ScalarFunction):
@@ -200,12 +201,13 @@ class Inv(ScalarFunction):
 
     @staticmethod
     def forward(ctx, a):
+        ctx.save_for_backward(a)
         return operators.inv(a)
 
     @staticmethod
     def backward(ctx, d_output):
-        # TODO: Implement for Task 1.4.
-        raise NotImplementedError('Need to implement for Task 1.4')
+        a = ctx.saved_values
+        return operators.inv_back(a, d_output)
 
 
 class Neg(ScalarFunction):
@@ -217,8 +219,7 @@ class Neg(ScalarFunction):
 
     @staticmethod
     def backward(ctx, d_output):
-        # TODO: Implement for Task 1.4.
-        raise NotImplementedError('Need to implement for Task 1.4')
+        return operators.neg(d_output)
 
 
 class Sigmoid(ScalarFunction):
@@ -226,12 +227,13 @@ class Sigmoid(ScalarFunction):
 
     @staticmethod
     def forward(ctx, a):
+        ctx.save_for_backward(a)
         return operators.sigmoid(a)
 
     @staticmethod
     def backward(ctx, d_output):
-        # TODO: Implement for Task 1.4.
-        raise NotImplementedError('Need to implement for Task 1.4')
+        a = ctx.saved_values
+        return d_output * operators.sigmoid(a) * (1 - operators.sigmoid(a))
 
 
 class ReLU(ScalarFunction):
@@ -239,12 +241,13 @@ class ReLU(ScalarFunction):
 
     @staticmethod
     def forward(ctx, a):
+        ctx.save_for_backward(a)
         return operators.relu(a)
 
     @staticmethod
     def backward(ctx, d_output):
-        # TODO: Implement for Task 1.4.
-        raise NotImplementedError('Need to implement for Task 1.4')
+        a = ctx.saved_values
+        return operators.relu_back(a, d_output)
 
 
 class Exp(ScalarFunction):
@@ -252,12 +255,13 @@ class Exp(ScalarFunction):
 
     @staticmethod
     def forward(ctx, a):
+        ctx.save_for_backward(a)
         return operators.exp(a)
 
     @staticmethod
     def backward(ctx, d_output):
-        # TODO: Implement for Task 1.4.
-        raise NotImplementedError('Need to implement for Task 1.4')
+        a = ctx.saved_values
+        return d_output * operators.exp(a)
 
 
 class LT(ScalarFunction):
@@ -269,8 +273,7 @@ class LT(ScalarFunction):
 
     @staticmethod
     def backward(ctx, d_output):
-        # TODO: Implement for Task 1.4.
-        raise NotImplementedError('Need to implement for Task 1.4')
+        return 0.0, 0.0
 
 
 class EQ(ScalarFunction):
@@ -282,8 +285,7 @@ class EQ(ScalarFunction):
 
     @staticmethod
     def backward(ctx, d_output):
-        # TODO: Implement for Task 1.4.
-        raise NotImplementedError('Need to implement for Task 1.4')
+        return 0.0, 0.0
 
 
 def derivative_check(f, *scalars):

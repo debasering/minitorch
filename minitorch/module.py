@@ -19,7 +19,6 @@ class Module:
         "Return the direct child modules of this module."
         return self._modules.values()
 
-
     def train(self):
         "Set the mode of this module and all descendent modules to `train`."
         self.training = True
@@ -58,7 +57,6 @@ class Module:
         params = self.named_parameters()
         params = [(x, params[x][0]) for x in range(len(params))]
         return params
-
 
     def add_parameter(self, k, v):
         """

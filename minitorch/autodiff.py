@@ -190,8 +190,8 @@ class History:
         Returns:
             list of numbers : a derivative with respect to `inputs`
         """
-        # TODO: Implement for Task 1.4.
-        raise NotImplementedError('Need to implement for Task 1.4')
+
+        return self.last_fn.chain_rule(self.ctx, self.inputs, d_output)
 
 
 class FunctionBase:
@@ -273,8 +273,17 @@ class FunctionBase:
         """
         # Tip: Note when implementing this function that
         # cls.backward may return either a value or a tuple.
-        # TODO: Implement for Task 1.3.
-        raise NotImplementedError('Need to implement for Task 1.3')
+
+        answer = []
+
+        back = cls.backward(ctx, d_output)
+
+        back = wrap_tuple(back)
+
+        for var, derivative in zip(inputs, back):
+            if not is_constant(var):
+                answer.append((var, derivative))
+        return answer
 
 
 # Algorithms for backpropagation
@@ -295,8 +304,24 @@ def topological_sort(variable):
         list of Variables : Non-constant Variables in topological order
                             starting from the right.
     """
-    # TODO: Implement for Task 1.4.
-    raise NotImplementedError('Need to implement for Task 1.4')
+
+    seen_vars = set()
+    answer = []
+
+    def visit(var):
+        if is_constant(var) or var.unique_id in seen_vars:
+            return
+
+        if var.history.inputs is not None:
+            for new_var in var.history.inputs:
+                visit(new_var)
+
+        seen_vars.add(var.unique_id)
+        answer.append(var)
+
+    visit(variable)
+
+    return answer[::-1]
 
 
 def backpropagate(variable, deriv):
@@ -312,5 +337,17 @@ def backpropagate(variable, deriv):
 
     No return. Should write to its results to the derivative values of each leaf through `accumulate_derivative`.
     """
-    # TODO: Implement for Task 1.4.
-    raise NotImplementedError('Need to implement for Task 1.4')
+
+    queue = topological_sort(variable)
+
+    accumulated_derivatives = {var.unique_id: 0 for var in queue}
+    accumulated_derivatives[variable.unique_id] = deriv
+
+    for var in queue:
+        if var.is_leaf():
+            var.accumulate_derivative(accumulated_derivatives[var.unique_id])
+        else:
+            chain_rule_results = var.history.backprop_step(accumulated_derivatives[var.unique_id])
+            for result in chain_rule_results:
+
+                accumulated_derivatives[result[0].unique_id] += result[1]
