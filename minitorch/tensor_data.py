@@ -26,8 +26,7 @@ def index_to_position(index, strides):
 
     position = 0
 
-    if isinstance(strides, int):
-        strides = array([strides])
+    strides = strides
 
     for ind, stride in zip(index, strides):
         position += ind * stride
@@ -52,10 +51,19 @@ def to_index(ordinal, shape, out_index):
 
     """
 
-    stride = strides_from_shape(shape)
+    layout = [1]
+    offset = 1
+    for s in shape[::-1]:
+        layout.append(s * offset)
+        offset = s * offset
+
+    stride = array(layout[:-1][::-1])
+
+    new_ordinal = int(ordinal)
+
     for index in range(len(out_index)):
-        out_index[index] = ordinal // stride[index]
-        ordinal %= stride[index]
+        out_index[index] = new_ordinal // stride[index]
+        new_ordinal %= stride[index]
 
 
 def broadcast_index(big_index, big_shape, shape, out_index):
@@ -116,6 +124,7 @@ def strides_from_shape(shape):
     for s in reversed(shape):
         layout.append(s * offset)
         offset = s * offset
+
     return tuple(reversed(layout[:-1]))
 
 

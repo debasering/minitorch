@@ -3,8 +3,7 @@ from .tensor_data import (
     to_index,
     index_to_position,
     broadcast_index,
-    shape_broadcast,
-    MAX_DIMS,
+    shape_broadcast
 )
 from numba import njit, prange
 
@@ -14,6 +13,7 @@ from numba import njit, prange
 # This code will JIT compile fast versions your tensor_data functions.
 # If you get an error, read the docs for NUMBA as to what is allowed
 # in these functions.
+
 to_index = njit(inline="always")(to_index)
 index_to_position = njit(inline="always")(index_to_position)
 broadcast_index = njit(inline="always")(broadcast_index)
@@ -43,8 +43,22 @@ def tensor_map(fn):
     """
 
     def _map(out, out_shape, out_strides, in_storage, in_shape, in_strides):
-        # TODO: Implement for Task 3.1.
-        raise NotImplementedError('Need to implement for Task 3.1')
+
+        equiv_strides = np.array_equal(in_strides, out_strides) and np.array_equal(in_shape, out_shape)
+
+        for index in prange(len(out)):
+            if not equiv_strides:
+                in_index = np.zeros_like(in_shape)
+                out_index = np.zeros_like(out_shape)
+                to_index(index, out_shape, out_index)
+                broadcast_index(out_index, out_shape, in_shape, in_index)
+
+                in_pos = index_to_position(in_index, in_strides)
+                out_pos = index_to_position(out_index, out_strides)
+                out[out_pos] = fn(in_storage[in_pos])
+
+            else:
+                out[index] = fn(in_storage[index])
 
     return njit(parallel=True)(_map)
 
@@ -117,8 +131,28 @@ def tensor_zip(fn):
         b_shape,
         b_strides,
     ):
-        # TODO: Implement for Task 3.1.
-        raise NotImplementedError('Need to implement for Task 3.1')
+
+        equiv_strides = np.array_equal(a_strides, b_strides) and np.array_equal(a_strides, out_strides)
+        equiv_shapes = np.array_equal(a_shape, b_shape) and np.array_equal(a_shape, out_shape)
+        equiv_strides = equiv_strides and equiv_shapes
+
+        for index in prange(len(out)):
+
+            if not equiv_strides:
+                a_index = np.zeros_like(a_shape)
+                b_index = np.zeros_like(b_shape)
+                out_index = np.zeros_like(out_shape)
+                to_index(index, out_shape, out_index)
+                broadcast_index(out_index, out_shape, b_shape, b_index)
+                broadcast_index(out_index, out_shape, a_shape, a_index)
+
+                a_pos = index_to_position(a_index, a_strides)
+                b_pos = index_to_position(b_index, b_strides)
+                out_pos = index_to_position(out_index, out_strides)
+
+                out[out_pos] = fn(a_storage[a_pos], b_storage[b_pos])
+            else:
+                out[index] = fn(a_storage[index], b_storage[index])
 
     return njit(parallel=True)(_zip)
 
@@ -175,8 +209,23 @@ def tensor_reduce(fn):
     """
 
     def _reduce(out, out_shape, out_strides, a_storage, a_shape, a_strides, reduce_dim):
-        # TODO: Implement for Task 3.1.
-        raise NotImplementedError('Need to implement for Task 3.1')
+
+        for index in prange(len(out)):
+
+            a_index = np.zeros_like(a_shape)
+            out_index = np.zeros_like(out_shape)
+            to_index(index, a_shape, a_index)
+            broadcast_index(a_index, a_shape, out_shape, out_index)
+
+            out_pos = index_to_position(out_index, out_strides)
+
+            for red_index in prange(a_shape[reduce_dim]):
+                final_index = a_index
+                final_index[reduce_dim] = red_index
+
+                a_pos = index_to_position(final_index, a_strides)
+
+                out[out_pos] = fn(out[out_pos], a_storage[a_pos])
 
     return njit(parallel=True)(_reduce)
 
@@ -254,8 +303,8 @@ def tensor_matrix_multiply(
     Returns:
         None : Fills in `out`
     """
-    a_batch_stride = a_strides[0] if a_shape[0] > 1 else 0
-    b_batch_stride = b_strides[0] if b_shape[0] > 1 else 0
+    # a_batch_stride = a_strides[0] if a_shape[0] > 1 else 0
+    # b_batch_stride = b_strides[0] if b_shape[0] > 1 else 0
 
     # TODO: Implement for Task 3.2.
     raise NotImplementedError('Need to implement for Task 3.2')

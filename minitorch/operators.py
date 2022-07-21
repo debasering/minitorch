@@ -36,12 +36,13 @@ def neg(x):
 
 def lt(x, y):
     ":math:`f(x) =` 1.0 if x is less than y else 0.0"
-    return float(x < y)
+
+    return 1.0 if x < y else 0.0
 
 
 def eq(x, y):
     ":math:`f(x) =` 1.0 if x is equal to y else 0.0"
-    return float(x == y)
+    return 1.0 if x == y else 0.0
 
 
 def max(x, y):
@@ -73,9 +74,9 @@ def sigmoid(x):
         float : sigmoid value
     """
     if x > 0:
-        return 1 / (1 + exp(-x))
+        return 1 / (1 + math.exp(-x))
 
-    return exp(x) / (1 + exp(x))
+    return math.exp(x) / (1 + math.exp(x))
 
 
 def relu(x):
@@ -90,7 +91,7 @@ def relu(x):
     Returns:
         float : relu value
     """
-    return float(max(x, 0))
+    return x if x > 0.0 else 0.0
 
 
 EPS = 1e-6
@@ -103,7 +104,7 @@ def log(x):
 
 def exp(x):
     ":math:`f(x) = e^{x}`"
-    return float(math.exp(x))
+    return math.exp(x)
 
 
 def log_back(x, d):
@@ -123,7 +124,7 @@ def inv_back(x, d):
 
 def relu_back(x, d):
     r"If :math:`f = relu` compute :math:`d \times f'(x)`"
-    return d * max(0, int(x > 0))
+    return d if x > 0 else 0.0
 
 
 # ## Task 0.3

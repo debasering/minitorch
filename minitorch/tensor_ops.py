@@ -232,8 +232,6 @@ def tensor_reduce(fn):
         for index in range(len(a_storage)):
             to_index(index, a_shape, a_index)
             broadcast_index(a_index, a_shape, out_shape, out_index)
-            # out_index = a_index
-            # out_index[reduce_dim] = 0
 
             out_pos = index_to_position(out_index, out_strides)
 
