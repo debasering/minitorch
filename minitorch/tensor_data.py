@@ -219,7 +219,6 @@ class TensorData:
         Returns:
             :class:`TensorData`: a new TensorData with the same storage and a new dimension order.
         """
-        print(order, self.shape)
         assert list(sorted(order)) == list(
             range(len(self.shape))
         ), f"Must give a position to each dimension. Shape: {self.shape} Order: {order}"

@@ -118,11 +118,11 @@ if __name__ == "__main__":
     PTS = args.PTS
 
     if args.DATASET == "xor":
-        data = datasets.xor(PTS)
+        data = minitorch.datasets["Xor"](PTS)
     elif args.DATASET == "simple":
-        data = datasets.simple(PTS)
+        data = minitorch.datasets["Simple"](PTS)
     elif args.DATASET == "split":
-        data = datasets.split(PTS)
+        data = minitorch.datasets["Split"](PTS)
 
     HIDDEN = int(args.HIDDEN)
     RATE = args.RATE

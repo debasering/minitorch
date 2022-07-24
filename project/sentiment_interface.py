@@ -67,17 +67,17 @@ def render_run_sentiment_interface():
     )
 
     st.subheader("CNN Hyperparameters")
-    col1, col2 = st.beta_columns(2)
+    col1, col2 = st.columns(2)
     feature_map_size = col1.number_input("Feature map size", value=100)
     dropout = col2.number_input("Dropout", value=0.25)
     st.write("**Conv layer filter sizes**")
-    col1, col2, col3 = st.beta_columns(3)
+    col1, col2, col3 = st.columns(3)
     filter_size_1 = col1.number_input("Filter 1", value=3)
     filter_size_2 = col2.number_input("Filter 2", value=4)
     filter_size_3 = col3.number_input("Filter 3", value=5)
 
     st.subheader("Training config")
-    col1, col2 = st.beta_columns(2)
+    col1, col2 = st.columns(2)
     max_epochs = col1.number_input("Max epochs", value=250)
     learning_rate = col2.number_input(
         "Learning rate", value=0.01, step=0.001, format="%.3f"

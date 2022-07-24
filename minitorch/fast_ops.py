@@ -212,18 +212,17 @@ def tensor_reduce(fn):
 
         for index in prange(len(out)):
 
-            a_index = np.zeros_like(a_shape)
             out_index = np.zeros_like(out_shape)
-            to_index(index, a_shape, a_index)
-            broadcast_index(a_index, a_shape, out_shape, out_index)
+            a_index = np.zeros_like(out_shape)
+            to_index(index, out_shape, out_index)
+            to_index(index, out_shape, a_index)
 
             out_pos = index_to_position(out_index, out_strides)
 
-            for red_index in prange(a_shape[reduce_dim]):
-                final_index = a_index
-                final_index[reduce_dim] = red_index
+            for red_index in range(a_shape[reduce_dim]):
+                a_index[reduce_dim] = red_index
 
-                a_pos = index_to_position(final_index, a_strides)
+                a_pos = index_to_position(a_index, a_strides)
 
                 out[out_pos] = fn(out[out_pos], a_storage[a_pos])
 
@@ -303,11 +302,29 @@ def tensor_matrix_multiply(
     Returns:
         None : Fills in `out`
     """
+    #
     # a_batch_stride = a_strides[0] if a_shape[0] > 1 else 0
     # b_batch_stride = b_strides[0] if b_shape[0] > 1 else 0
 
-    # TODO: Implement for Task 3.2.
-    raise NotImplementedError('Need to implement for Task 3.2')
+    for index in prange(len(out)):
+        out_index = np.zeros_like(out_shape)
+
+        to_index(index, out_shape, out_index)
+
+        for red_index in range(a_shape[-1]):
+            a_index = out_index.copy()
+            b_index = out_index.copy()
+
+            broadcast_index(out_index, out_shape, a_shape, a_index)
+            broadcast_index(out_index, out_shape, b_shape, b_index)
+
+            a_index[-1] = red_index
+            b_index[-2] = red_index
+
+            a_pos = index_to_position(a_index, a_strides)
+            b_pos = index_to_position(b_index, b_strides)
+
+            out[index] += a_storage[a_pos] * b_storage[b_pos]
 
 
 def matrix_multiply(a, b):

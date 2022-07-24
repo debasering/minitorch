@@ -15,7 +15,7 @@ def render_train_interface(
     st.write("## Sandbox for Model Training")
 
     st.markdown("### Dataset")
-    col1, col2 = st.beta_columns(2)
+    col1, col2 = st.columns(2)
     points = col2.slider("Number of points", min_value=1, max_value=150, value=50)
     selected_dataset = col1.selectbox("Select dataset", list(datasets_map.keys()))
 
@@ -83,7 +83,7 @@ def render_train_interface(
 
     if hasattr(train, "train"):
         st.markdown("### Hyperparameters")
-        col1, col2 = st.beta_columns(2)
+        col1, col2 = st.columns(2)
         learning_rate = col1.selectbox(
             "Learning rate", [0.001, 0.01, 0.05, 0.1, 0.5, 1.0, 5.0], index=2
         )
@@ -92,7 +92,7 @@ def render_train_interface(
             "Number of epochs", min_value=1, step=25, value=500
         )
 
-        col1, col2 = st.beta_columns(2)
+        col1, col2 = st.columns(2)
         st_train_button = col1.empty()
         col2.button("Stop Model")
 

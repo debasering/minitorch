@@ -329,7 +329,6 @@ def test_mm2():
 
     minitorch.grad_check(lambda a, b: a @ b, a, b)
 
-
 # ## Task 3.2 and 3.4
 
 # Matrix Multiplication
