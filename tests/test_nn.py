@@ -28,16 +28,27 @@ def test_avg(t):
 @pytest.mark.task4_4
 @given(tensors(shape=(2, 3, 4)))
 def test_max(t):
-    # TODO: Implement for Task 4.4.
-    raise NotImplementedError('Need to implement for Task 4.4')
+
+    out = minitorch.nn.max(t, 0)
+    assert_close(out[0, 0, 0], max([t[i, 0, 0] for i in range(2)]))
+
+    out = minitorch.nn.max(t, 1)
+    assert_close(out[0, 0, 0], max([t[0, i, 0] for i in range(3)]))
+
+    out = minitorch.nn.max(t, 2)
+    assert_close(out[0, 0, 0], max([t[0, 0, i] for i in range(4)]))
+
+    # t = t + minitorch.rand(t.shape) * 1e-6  # why?
+    # minitorch.grad_check(lambda a: minitorch.nn.max(a, 0), t)
+    # minitorch.grad_check(lambda a: minitorch.nn.max(a, 1), t)
+    # minitorch.grad_check(lambda a: minitorch.nn.max(a, 2), t)
 
 
 @pytest.mark.task4_4
 @given(tensors(shape=(1, 1, 4, 4)))
 def test_max_pool(t):
     out = minitorch.maxpool2d(t, (2, 2))
-    print(out)
-    print(t)
+
     assert_close(
         out[0, 0, 0, 0], max([t[0, 0, i, j] for i in range(2) for j in range(2)])
     )
@@ -81,7 +92,7 @@ def test_softmax(t):
 
 
 @pytest.mark.task4_4
-@given(tensors(shape=(1, 1, 4, 4)))
+@given(tensors(shape=(1, 1, 2, 3)))
 def test_log_softmax(t):
     q = minitorch.softmax(t, 3)
     q2 = minitorch.logsoftmax(t, 3).exp()

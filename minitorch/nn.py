@@ -67,14 +67,14 @@ class Max(Function):
     @staticmethod
     def forward(ctx, input, dim):
         "Forward of max should be max reduction"
-        # TODO: Implement for Task 4.4.
-        raise NotImplementedError('Need to implement for Task 4.4')
+        ctx.save_for_backward(input, dim)
+        return max_reduce(input, dim)
 
     @staticmethod
     def backward(ctx, grad_output):
         "Backward of max should be argmax (see above)"
-        # TODO: Implement for Task 4.4.
-        raise NotImplementedError('Need to implement for Task 4.4')
+        input, dim = ctx.saved_values
+        return grad_output * argmax(input, dim)
 
 
 max = Max.apply
@@ -95,8 +95,7 @@ def softmax(input, dim):
     Returns:
         :class:`Tensor` : softmax tensor
     """
-    # TODO: Implement for Task 4.4.
-    raise NotImplementedError('Need to implement for Task 4.4')
+    return input.exp() / input.exp().sum(dim)
 
 
 def logsoftmax(input, dim):
@@ -116,8 +115,8 @@ def logsoftmax(input, dim):
     Returns:
         :class:`Tensor` : log of softmax tensor
     """
-    # TODO: Implement for Task 4.4.
-    raise NotImplementedError('Need to implement for Task 4.4')
+
+    return input - input.exp().sum(dim).log()
 
 
 def maxpool2d(input, kernel):
@@ -132,8 +131,9 @@ def maxpool2d(input, kernel):
         :class:`Tensor` : pooled tensor
     """
     batch, channel, height, width = input.shape
-    # TODO: Implement for Task 4.4.
-    raise NotImplementedError('Need to implement for Task 4.4')
+    new_tensor, new_height, new_width = tile(input, kernel)
+    new_tensor = max(new_tensor, 4).view(batch, channel, new_height, new_width)
+    return new_tensor
 
 
 def dropout(input, rate, ignore=False):
@@ -146,7 +146,10 @@ def dropout(input, rate, ignore=False):
         ignore (bool): skip dropout, i.e. do nothing at all
 
     Returns:
-        :class:`Tensor` : tensor with randoom positions dropped out
+        :class:`Tensor` : tensor with random positions dropped out
     """
-    # TODO: Implement for Task 4.4.
-    raise NotImplementedError('Need to implement for Task 4.4')
+    if ignore:
+        return input
+
+    else:
+        return input * (rand(input.shape) > rate)  # here is no normalization

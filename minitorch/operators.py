@@ -94,7 +94,7 @@ def relu(x):
     return x if x > 0.0 else 0.0
 
 
-EPS = 1e-6
+EPS = 0
 
 
 def log(x):

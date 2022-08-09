@@ -195,7 +195,7 @@ def tensor_reduce(fn):
             out_index = np.zeros_like(out_shape)
             to_index(out_pos, out_shape, out_index)
 
-            for red_index in prange(a_shape[reduce_dim]):
+            for red_index in range(a_shape[reduce_dim]):
                 a_index = np.zeros_like(out_shape)
                 to_index(out_pos, out_shape, a_index)
 

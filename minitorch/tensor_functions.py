@@ -235,7 +235,6 @@ def make_tensor_backend(tensor_ops, is_cuda=False):
             @staticmethod
             def backward(ctx, grad_output):
                 original = ctx.saved_values
-                print(grad_output.shape, original)
                 return Tensor.make(
                     grad_output._tensor._storage, original, backend=grad_output.backend
                 )
