@@ -193,12 +193,14 @@ def tensor_reduce(fn):
         for out_pos in prange(len(out)):
 
             out_index = np.zeros_like(out_shape)
-            a_index = np.zeros_like(out_shape)
             to_index(out_pos, out_shape, out_index)
-            to_index(out_pos, out_shape, a_index)
 
-            for red_index in range(a_shape[reduce_dim]):
+            for red_index in prange(a_shape[reduce_dim]):
+                a_index = np.zeros_like(out_shape)
+                to_index(out_pos, out_shape, a_index)
+
                 a_index[reduce_dim] = red_index
+
                 a_pos = index_to_position(a_index, a_strides)
 
                 out[out_pos] = fn(out[out_pos], a_storage[a_pos])
