@@ -279,9 +279,12 @@ def tensor_matrix_multiply(
 
         to_index(index, out_shape, out_index)
 
-        for red_index in range(a_shape[-1]):
-            a_index = out_index.copy()
-            b_index = out_index.copy()
+        for red_index in prange(a_shape[-1]):
+            a_index = np.zeros_like(out_shape)
+            b_index = np.zeros_like(out_shape)
+
+            to_index(index, out_shape, a_index)
+            to_index(index, out_shape, b_index)
 
             broadcast_index(out_index, out_shape, a_shape, a_index)
             broadcast_index(out_index, out_shape, b_shape, b_index)
