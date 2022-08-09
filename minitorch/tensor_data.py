@@ -225,6 +225,7 @@ class TensorData:
 
         new_shape = tuple(self._shape[x] for x in order)
         new_strides = tuple(self._strides[x] for x in order)
+
         new_tensor = TensorData(self._storage, new_shape, new_strides)
 
         return new_tensor

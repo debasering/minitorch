@@ -57,15 +57,14 @@ def tensor_conv1d(
         input (array): storage for `input` tensor.
         input_shape (array): shape for `input` tensor.
         input_strides (array): strides for `input` tensor.
-        weight (array): storage for `input` tensor.
-        weight_shape (array): shape for `input` tensor.
-        weight_strides (array): strides for `input` tensor.
+        weight (array): storage for `weight` tensor.
+        weight_shape (array): shape for `weight` tensor.
+        weight_strides (array): strides for `weight` tensor.
         reverse (bool): anchor weight at left or right
     """
     batch_, out_channels, out_width = out_shape
     batch, in_channels, width = input_shape
     out_channels_, in_channels_, kw = weight_shape
-
     assert (
         batch == batch_
         and in_channels == in_channels_
@@ -74,8 +73,23 @@ def tensor_conv1d(
     s1 = input_strides
     s2 = weight_strides
 
-    # TODO: Implement for Task 4.1.
-    raise NotImplementedError('Need to implement for Task 4.1')
+    for out_pos in prange(out_size):
+        out_index = np.zeros_like(out_shape)
+
+        to_index(out_pos, out_shape, out_index)
+
+        for channel in prange(in_channels):
+            for shift in prange(kw):
+                input_index = out_index.copy()
+                input_index[1] = channel
+
+                input_index[2] += -shift if reverse else shift
+
+                if 0 <= input_index[2] < input_shape[2]:
+                    in_pos = index_to_position(input_index, input_strides)
+                    weight_index = np.array([out_index[1], channel, shift])
+                    w_pos = index_to_position(weight_index, weight_strides)
+                    out[out_pos] += input[in_pos] * weight[w_pos]
 
 
 class Conv1dFun(Function):
@@ -83,12 +97,10 @@ class Conv1dFun(Function):
     def forward(ctx, input, weight):
         """
         Compute a 1D Convolution
-
         Args:
             ctx : Context
             input (:class:`Tensor`) : batch x in_channel x h x w
             weight (:class:`Tensor`) : out_channel x in_channel x kh x kw
-
         Returns:
             (:class:`Tensor`) : batch x out_channel x h x w
         """
@@ -112,6 +124,7 @@ class Conv1dFun(Function):
         grad_weight = grad_output.zeros((in_channels, out_channels, kw))
         new_input = input.permute(1, 0, 2)
         new_grad_output = grad_output.permute(1, 0, 2)
+
         tensor_conv1d(
             *grad_weight.tuple(),
             grad_weight.size,
@@ -119,6 +132,7 @@ class Conv1dFun(Function):
             *new_grad_output.tuple(),
             False,
         )
+
         grad_weight = grad_weight.permute(1, 0, 2)
 
         grad_input = input.zeros((batch, in_channels, w))
@@ -198,8 +212,25 @@ def tensor_conv2d(
     s10, s11, s12, s13 = s1[0], s1[1], s1[2], s1[3]
     s20, s21, s22, s23 = s2[0], s2[1], s2[2], s2[3]
 
-    # TODO: Implement for Task 4.2.
-    raise NotImplementedError('Need to implement for Task 4.2')
+    for out_pos in prange(out_size):
+        out_index = np.zeros_like(out_shape)
+
+        to_index(out_pos, out_shape, out_index)
+
+        for channel in prange(in_channels):
+            for height_shift in prange(kh):
+                for width_shift in prange(kw):
+                    input_index = out_index.copy()
+                    input_index[1] = channel
+
+                    input_index[2] += -height_shift if reverse else height_shift
+                    input_index[3] += -width_shift if reverse else width_shift
+
+                    if (0 <= input_index[2] < input_shape[2]) and (0 <= input_index[3] < input_shape[3]):
+                        in_pos = index_to_position(input_index, input_strides)
+                        weight_index = np.array([out_index[1], channel, height_shift, width_shift])
+                        w_pos = index_to_position(weight_index, weight_strides)
+                        out[out_pos] += input[in_pos] * weight[w_pos]
 
 
 class Conv2dFun(Function):

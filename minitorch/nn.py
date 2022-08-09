@@ -19,8 +19,11 @@ def tile(input, kernel):
     kh, kw = kernel
     assert height % kh == 0
     assert width % kw == 0
-    # TODO: Implement for Task 4.3.
-    raise NotImplementedError('Need to implement for Task 4.3')
+
+    new_tensor = input.contiguous().view(batch, channel, height, width // kw, kw)
+    new_tensor = new_tensor.permute(0, 1, 3, 2, 4).contiguous()
+    new_tensor = new_tensor.view(batch, channel, width // kw, height // kh, kh * kw).permute(0, 1, 3, 2, 4)
+    return new_tensor, height // kh, width // kw
 
 
 def avgpool2d(input, kernel):
@@ -35,8 +38,10 @@ def avgpool2d(input, kernel):
         :class:`Tensor` : pooled tensor
     """
     batch, channel, height, width = input.shape
-    # TODO: Implement for Task 4.3.
-    raise NotImplementedError('Need to implement for Task 4.3')
+    new_tensor, new_height, new_width = tile(input, kernel)
+    new_tensor = new_tensor.mean(4)
+    new_tensor = new_tensor.view(batch, channel, new_height, new_width)
+    return new_tensor
 
 
 max_reduce = FastOps.reduce(operators.max, -1e9)

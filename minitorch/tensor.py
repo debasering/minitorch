@@ -33,7 +33,7 @@ class Tensor(Variable):
     def to_numpy(self):
         """
         Returns:
-             narray : converted to numpy array
+             array : converted to numpy array
         """
         return self.contiguous()._tensor._storage.reshape(self.shape)
 

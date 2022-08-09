@@ -217,25 +217,27 @@ def make_tensor_backend(tensor_ops, is_cuda=False):
             def forward(ctx, a, order):
                 inv_order = np.argsort(order)
                 ctx.save_for_backward(inv_order)
-                a._tensor.permute(*order)
-                return a
+                perm_tensor = Tensor(a._tensor.permute(*order), backend=a.backend)
+                return perm_tensor
 
             @staticmethod
             def backward(ctx, grad_output):
                 inv_order = ctx.saved_values
-                grad_output._tensor.permute(*inv_order)
-                return grad_output
+                new_grad = Tensor(grad_output._tensor.permute(*inv_order), backend=grad_output.backend)
+                return new_grad
 
         class View(Function):
             @staticmethod
             def forward(ctx, a, shape):
                 ctx.save_for_backward(a.shape)
                 assert a._tensor.is_contiguous(), "Must be contiguous to view"
+                # print("forw:", a._tensor._storage.shape, np.prod(shape))
                 return Tensor.make(a._tensor._storage, shape, backend=a.backend)
 
             @staticmethod
             def backward(ctx, grad_output):
                 original = ctx.saved_values
+                # print("back: ", grad_output._tensor._storage.shape, np.prod(original))
                 return Tensor.make(
                     grad_output._tensor._storage, original, backend=grad_output.backend
                 )

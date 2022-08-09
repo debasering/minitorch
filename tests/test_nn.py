@@ -21,6 +21,7 @@ def test_avg(t):
     assert_close(
         out[0, 0, 0, 0], sum([t[0, 0, i, j] for i in range(1) for j in range(2)]) / 2.0
     )
+
     minitorch.grad_check(lambda t: minitorch.avgpool2d(t, (2, 2)), t)
 
 
