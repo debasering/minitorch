@@ -39,8 +39,7 @@ def avgpool2d(input, kernel):
     """
     batch, channel, height, width = input.shape
     new_tensor, new_height, new_width = tile(input, kernel)
-    new_tensor = new_tensor.mean(4)
-    new_tensor = new_tensor.view(batch, channel, new_height, new_width)
+    new_tensor = new_tensor.mean(4).view(batch, channel, new_height, new_width)
     return new_tensor
 
 

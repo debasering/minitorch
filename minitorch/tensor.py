@@ -134,6 +134,7 @@ class Tensor(Variable):
 
     def mean(self, dim=None):
         "Compute the mean over dimension `dim`"
+        # print("here", self.shape, self.size, dim)
         if dim is not None:
             return self.sum(dim) / self.shape[dim]
         else:

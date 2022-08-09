@@ -227,14 +227,18 @@ def tensor_reduce(fn):
     def _reduce(out, out_shape, out_strides, a_storage, a_shape, a_strides, reduce_dim):
 
         for out_pos in range(len(out)):
-            out_idx = np.copy(out_shape)
 
-            to_index(out_pos, out_shape, out_idx)
+            out_index = np.zeros_like(out_shape)
+            to_index(out_pos, out_shape, out_index)
+
+            a_index = np.zeros_like(out_shape)
+            to_index(out_pos, out_shape, a_index)
 
             for red_index in range(a_shape[reduce_dim]):
-                out_idx[reduce_dim] = red_index
 
-                a_pos = index_to_position(out_idx, a_strides)
+                a_index[reduce_dim] = red_index
+
+                a_pos = index_to_position(a_index, a_strides)
 
                 out[out_pos] = fn(out[out_pos], a_storage[a_pos])
 
