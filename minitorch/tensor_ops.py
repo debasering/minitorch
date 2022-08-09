@@ -228,14 +228,14 @@ def tensor_reduce(fn):
 
         for out_pos in range(len(out)):
             out_idx = np.copy(out_shape)
-            # get index of current out position
+
             to_index(out_pos, out_shape, out_idx)
 
-            for j in range(a_shape[reduce_dim]):
-                out_idx[reduce_dim] = j
-                # get input position in storage based on index
+            for red_index in range(a_shape[reduce_dim]):
+                out_idx[reduce_dim] = red_index
+
                 a_pos = index_to_position(out_idx, a_strides)
-                # apply fn on input storage value at position and write to output storage
+
                 out[out_pos] = fn(out[out_pos], a_storage[a_pos])
 
     return _reduce
