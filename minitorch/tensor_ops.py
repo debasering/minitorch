@@ -238,7 +238,6 @@ def tensor_reduce(fn):
                 # apply fn on input storage value at position and write to output storage
                 out[out_pos] = fn(out[out_pos], a_storage[a_pos])
 
-
     return _reduce
 
 
